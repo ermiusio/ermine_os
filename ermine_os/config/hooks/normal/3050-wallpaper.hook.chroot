@@ -1,0 +1,4 @@
+#!/bin/bash
+
+mkdir -p /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml
+cp /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml /root/.config/xfce4/xfconf/xfce-perchannel-xml/ 2>/dev/null || true

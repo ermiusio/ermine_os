@@ -1,0 +1,41 @@
+#!/bin/bash
+set -e
+
+apt-get purge -y --autoremove \
+    gnome-keyring \
+    pinentry-gnome3 \
+    network-manager-gnome \
+    policykit-1-gnome \
+    gnome-themes-extra \
+    gnome-themes-extra-data \
+    gnome-icon-theme \
+    gnome-accessibility-themes \
+    libpam-gnome-keyring \
+    seahorse \
+    gnome-online-accounts \
+    goa-daemon \
+    dconf-gsettings-backend \
+    dconf-service \
+    gcr \
+    libgcr-ui-3-1 \
+    libsecret-1-0 \
+    gnome-keyring-pkcs11 \
+    libpam-gnome-keyring \
+    evolution-data-server || true
+
+
+apt-get purge -y --autoremove pulseaudio \
+    pulseaudio-utils 
+    
+apt-get purge -y --autoremove \
+    bluez-firmware \
+    pulseaudio \
+    pulseaudio-utils || true
+
+rm -rf /usr/share/doc/*
+rm -rf /usr/share/man/*
+
+apt-get autoremove -y
+apt-get autoclean -y
+apt-get clean
+

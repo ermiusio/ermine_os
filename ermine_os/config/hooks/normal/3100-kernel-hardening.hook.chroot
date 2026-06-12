@@ -1,0 +1,45 @@
+#!/bin/bash
+set -e
+
+cat > /etc/apt/sources.list.d/backports.list << EOF
+deb http://deb.debian.org/debian bookworm-backports main contrib non-free non-free-firmware
+EOF
+
+apt-get update
+apt-get install -y -t bookworm-backports linux-image-amd64 linux-headers-amd64
+apt-get install -y hardening-runtime
+
+cat > /etc/sysctl.d/99-max-hardening.conf << EOF
+kernel.kptr_restrict = 2
+kernel.dmesg_restrict = 1
+kernel.printk = 3 4 1 7
+kernel.unprivileged_bpf_disabled = 2
+kernel.yama.ptrace_scope = 2
+kernel.randomize_va_space = 2
+
+vm.init_on_alloc = 1
+vm.init_on_free = 1
+vm.mmap_rnd_bits = 32
+vm.mmap_rnd_compat_bits = 16
+
+fs.suid_dumpable = 0
+kernel.core_pattern = |/bin/false
+
+kernel.perf_event_paranoid = 3
+kernel.kexec_load_disabled = 1
+dev.tty.ldisc_autoload = 0
+kernel.sysrq = 0
+
+net.core.bpf_jit_harden = 2
+net.ipv4.conf.all.rp_filter = 1
+net.ipv4.conf.default.rp_filter = 1
+net.ipv4.conf.all.accept_redirects = 0
+net.ipv6.conf.all.accept_redirects = 0
+
+kernel.modules_disabled = 0
+EOF
+
+sysctl -p /etc/sysctl.d/99-max-hardening.conf 2>/dev/null || true
+
+echo "* hard core 0" >> /etc/security/limits.conf
+echo "* soft core 0" >> /etc/security/limits.conf

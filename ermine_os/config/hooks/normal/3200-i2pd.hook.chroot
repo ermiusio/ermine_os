@@ -1,0 +1,156 @@
+#!/bin/bash
+set -e
+
+apt-get update
+apt-get install -y apt-transport-https wget gnupg lsb-release
+
+wget -qO - https://repo.i2pd.xyz/.help/add_repo | bash -s -
+
+apt-get update
+apt-get install -y i2pd
+
+mkdir -p /etc/i2pd
+chmod 700 /etc/i2pd
+
+cat > /etc/i2pd/i2pd.conf << 'EOF'
+ipv4 = true
+ipv6 = false
+notransit = true
+share = 100
+log = file
+loglevel = warn
+
+[trust]
+enabled = true
+hidden = true
+
+[ntcp2]
+enabled = true
+published = true
+
+[ssu2]
+enabled = true
+published = true
+
+[http]
+enabled = true
+address = 127.0.0.1
+port = 7070
+
+[httpproxy]
+enabled = true
+address = 127.0.0.1
+port = 4444
+addresshelper = false
+
+[socksproxy]
+enabled = true
+address = 127.0.0.1
+port = 4447
+
+[sam]
+enabled = false
+
+[bob]
+enabled = false
+
+[i2cp]
+enabled = false
+
+[i2pcontrol]
+enabled = false
+
+[upnp]
+enabled = false
+
+[reseed]
+verify = true
+urls = https://reseed.i2p.rocks/,https://reseed-fr.i2pd.xyz/,https://i2p.novg.net/,https://reseed.i2p.io/
+
+[limits]
+transittunnels = 0
+
+[exploratory]
+inbound.length = 5
+inbound.quantity = 5
+outbound.length = 5
+outbound.quantity = 5
+EOF
+
+chmod 600 /etc/i2pd/i2pd.conf
+
+cat > /etc/i2pd/tunnels.conf << 'EOF'
+[IRC-ILITA-Paranoid]
+type = client
+address = 127.0.0.1
+port = 6668
+destination = irc.ilita.i2p
+destinationport = 6667
+inbound.length = 5
+outbound.length = 5
+inbound.quantity = 5
+outbound.quantity = 5
+i2cp.close.idletimeout = 480
+
+[IRC-IRC2P-Paranoid]
+type = client
+address = 127.0.0.1
+port = 6669
+destination = irc.postman.i2p
+destinationport = 6667
+inbound.length = 5
+outbound.length = 5
+inbound.quantity = 5
+outbound.quantity = 5
+i2cp.close.idletimeout = 480
+EOF
+
+chmod 600 /etc/i2pd/tunnels.conf
+
+systemctl enable i2pd || true
+
+cat > /usr/local/bin/i2p-launcher << 'EOS'
+#!/bin/bash
+set -e
+
+CHOICE=$(zenity --list \
+  --title="I2P Control" \
+  --column="Action" \
+  "Start i2pd" \
+  "Stop i2pd" \
+  "Status" \
+  "View log")
+
+case "$CHOICE" in
+  "Start i2pd")
+    sudo systemctl start i2pd
+    zenity --info --text="i2pd started"
+    ;;
+  "Stop i2pd")
+    sudo systemctl stop i2pd
+    zenity --info --text="i2pd stopped"
+    ;;
+  "Status")
+    systemctl status i2pd | zenity --text-info --width=800 --height=600
+    ;;
+  "View log")
+    journalctl -u i2pd -n 100 | zenity --text-info --width=800 --height=600
+    ;;
+  *) exit 0 ;;
+esac
+EOS
+sudo chown i2pd:i2pd /etc/i2pd /etc/i2pd/*.conf
+chmod +x /usr/local/bin/i2p-launcher
+
+mkdir -p /home/ermine/Desktop
+cat > /home/ermine/Desktop/I2P.desktop <<EOF
+[Desktop Entry]
+Name=I2P
+Exec=/usr/local/bin/i2p-launcher
+Icon=network-vpn
+Type=Application
+Terminal=false
+EOF
+
+chown -R ermine:ermine /home/ermine/Desktop
+chmod 755 /home/ermine/Desktop/I2P.desktop

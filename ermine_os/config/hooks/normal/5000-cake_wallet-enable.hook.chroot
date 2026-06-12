@@ -1,0 +1,12 @@
+#!/bin/bash
+
+mkdir -p /home/ermine
+chown -R ermine:ermine /home/ermine
+chmod 755 /home/ermine
+
+mkdir -p /home/ermine/.config/cake_wallet
+mkdir -p /home/ermine/.cache/cake_wallet
+mkdir -p /home/ermine/.local/share/cake_wallet
+
+chown -R ermine:ermine /home/ermine/.config /home/ermine/.cache /home/ermine/.local
+chmod -R 755 /home/ermine/.config /home/ermine/.cache /home/ermine/.local

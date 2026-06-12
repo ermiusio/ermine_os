@@ -1,0 +1,127 @@
+#!/bin/bash
+set -e
+
+apt-get update
+apt-get install -y --no-install-recommends wget tar xz-utils
+
+cd /opt
+
+TOR_VERSION="15.0.15"
+TOR_ARCHIVE="tor-browser-linux-x86_64-${TOR_VERSION}.tar.xz"
+TOR_URL="https://dist.torproject.org/torbrowser/${TOR_VERSION}/${TOR_ARCHIVE}"
+
+echo "Скачиваем Tor Browser ${TOR_VERSION} ..."
+wget --no-verbose -O "${TOR_ARCHIVE}" "${TOR_URL}"
+
+if [ ! -s "${TOR_ARCHIVE}" ]; then
+    echo "Ошибка: архив не скачан" >&2
+    exit 1
+fi
+
+tar -xJf "${TOR_ARCHIVE}"
+rm -f "${TOR_ARCHIVE}"
+
+if [ ! -d "tor-browser" ]; then
+    exit 1
+fi
+
+cp -a tor-browser tor-browser-i2p
+
+chown -R ermine:ermine /opt/tor-browser /opt/tor-browser-i2p
+chmod -R go+rX /opt/tor-browser /opt/tor-browser-i2p
+chmod 755 /opt/tor-browser/Browser/start-tor-browser
+chmod 755 /opt/tor-browser-i2p/Browser/start-tor-browser
+
+if [ -f /tor_profile.default.zip ]; then
+    rm -rf /opt/tor-browser/Browser/TorBrowser/Data/Browser/profile.default/*
+    unzip -o /tor_profile.default.zip -d /opt/tor-browser/Browser/TorBrowser/Data/Browser/
+    chown -R ermine:ermine /opt/tor-browser/Browser/TorBrowser/Data/Browser/profile.default
+    chmod -R 755 /opt/tor-browser/Browser/TorBrowser/Data/Browser/profile.default
+else
+    echo "tor_profile.default.zip не найден"
+fi
+
+if [ -f /i2p_profile.default.zip ]; then
+    rm -rf /opt/tor-browser-i2p/Browser/TorBrowser/Data/Browser/profile.default/*
+    unzip -o /i2p_profile.default.zip -d /opt/tor-browser-i2p/Browser/TorBrowser/Data/Browser/
+    chown -R ermine:ermine /opt/tor-browser-i2p/Browser/TorBrowser/Data/Browser/profile.default
+    chmod -R 755 /opt/tor-browser-i2p/Browser/TorBrowser/Data/Browser/profile.default
+else
+    echo "i2p_profile.default.zip не найден"
+fi
+
+if [ -f /tor_i2p.png ]; then
+    mkdir -p /usr/share/icons/hicolor/128x128/apps/
+    cp /tor_i2p.png /usr/share/icons/hicolor/128x128/apps/tor-browser-i2p.png
+    chmod 644 /usr/share/icons/hicolor/128x128/apps/tor-browser-i2p.png
+else
+    echo "tor_i2p.ico не найден в корне будет использована стандартная иконка" >&2
+fi
+
+mkdir -p /usr/share/applications
+
+cat > /usr/share/applications/tor-browser.desktop << 'EOF'
+[Desktop Entry]
+Version=1.0
+Name=Tor Browser 
+GenericName=Анонимный браузер Tor
+Comment=Обычный Tor Browser
+Exec=/opt/tor-browser/Browser/start-tor-browser --detach
+Icon=/opt/tor-browser/Browser/browser/chrome/icons/default/default128.png
+Terminal=false
+Type=Application
+Categories=Network;WebBrowser;Privacy;Security;Tor;
+StartupWMClass=Tor Browser
+EOF
+
+cat > /usr/share/applications/tor-browser-i2p.desktop << 'EOF'
+[Desktop Entry]
+Version=1.0
+Name=Tor i2pd Browser
+GenericName=Tor Browser с прокси на i2pd
+Comment=Использует прокси 127.0.0.1:4444 (i2pd http)
+Exec=/opt/tor-browser-i2p/Browser/start-tor-browser --detach
+Icon=tor-browser-i2p
+Terminal=false
+Type=Application
+Categories=Network;WebBrowser;Privacy;Security;Tor;i2p;
+StartupWMClass=Tor Browser
+EOF
+
+chmod 644 /usr/share/applications/tor-browser*.desktop
+
+
+DESKTOP_DIR=$(su - ermine -c "echo \$HOME")/Desktop
+mkdir -p "$DESKTOP_DIR"
+
+cat > "$DESKTOP_DIR/tor-browser.desktop" << 'EOF'
+[Desktop Entry]
+Version=1.0
+Name=Tor Browser
+GenericName=Анонимный браузер Tor
+Comment=Обычный Tor Browser
+Exec=/opt/tor-browser/Browser/start-tor-browser --detach
+Icon=/opt/tor-browser/Browser/browser/chrome/icons/default/default128.png
+Terminal=false
+Type=Application
+Categories=Network;WebBrowser;Privacy;Security;Tor;
+StartupWMClass=Tor Browser
+EOF
+
+cat > "$DESKTOP_DIR/tor-browser-i2p.desktop" << 'EOF'
+[Desktop Entry]
+Version=1.0
+Name=Tor i2pd Browser
+GenericName=Tor Browser с прокси на i2pd
+Comment=Использует прокси 127.0.0.1:4444 (i2pd http)
+Exec=/opt/tor-browser-i2p/Browser/start-tor-browser --detach
+Icon=tor-browser-i2p
+Terminal=false
+Type=Application
+Categories=Network;WebBrowser;Privacy;Security;Tor;i2p;
+StartupWMClass=Tor Browser
+EOF
+
+chown ermine:ermine "$DESKTOP_DIR"/tor-browser*.desktop
+chmod 755 "$DESKTOP_DIR"/tor-browser*.desktop
+

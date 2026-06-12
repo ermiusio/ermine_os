@@ -1,0 +1,18 @@
+SocksPort 127.0.0.1:9050 IsolateDestAddr IsolateDestPort
+ControlPort 127.0.0.1:9052
+CookieAuthentication 1
+
+DNSPort 5355
+AutomapHostsOnResolve 1
+AutomapHostsSuffixes .exit,.onion
+
+TransPort 127.0.0.1:9040
+
+AvoidDiskWrites 1
+Log notice syslog
+UseBridges 1
+
+VirtualAddrNetworkIPv4 10.192.0.0/10
+ClientTransportPlugin obfs4 exec /usr/bin/obfs4proxy
+
+Bridge obfs4 185.177.207.222:11222 12E3984C990EB63EE5268A32385FA57D9CFCB778 cert=6exDi38qI/BFHOgWNO7frIltJRRR+6zToYEEhZ2vneVjSt4U/IZ9ySGAKlsbi59FULCoQQ iat-mode=1

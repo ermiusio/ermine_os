@@ -1,0 +1,45 @@
+#include <tunables/global>
+ 
+profile cakewallet /opt/cakewallet/cake_wallet {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+  #include <abstractions/ssl_certs>
+  #include <abstractions/fonts>
+  #include <abstractions/audio>
+ 
+  network tcp,
+  network udp,
+  network netlink raw,
+  network unix,
+ 
+  /opt/cakewallet/** rix,
+ 
+  owner @{HOME}/.config/cake_wallet/** rwk,
+  owner @{HOME}/.cache/cake_wallet/** rwk,
+  owner @{HOME}/.local/share/cake_wallet/** rwk,
+ 
+  /dev/dri/** rw,
+  /dev/dri/card* rw,
+  /dev/dri/renderD* rw,
+ 
+  /sys/devices/pci*/** r,
+  /sys/devices/** r,
+ 
+  /etc/fonts/** r,
+  /usr/share/fonts/** r,
+  /usr/local/share/fonts/** r,
+ 
+  /tmp/.X11-unix/** rw,
+  unix (connect, send, receive) type=stream,
+  unix (connect, send, receive) type=dgram,
+ 
+  /usr/lib/** mr,
+  /lib/** mr,
+ 
+  deny capability sys_ptrace,
+  deny capability sys_admin,
+  deny capability sys_rawio,
+ 
+  audit deny /proc/** w,
+}
+

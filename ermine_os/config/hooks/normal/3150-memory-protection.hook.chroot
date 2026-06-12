@@ -1,0 +1,75 @@
+#!/bin/sh
+set -e
+
+apt-get update
+apt-get install -y secure-delete || true
+
+apt-get purge -y dracut || true
+
+cat > /etc/sysctl.d/99-memory-hardening.conf << EOF
+vm.init_on_alloc = 1
+vm.init_on_free = 1
+vm.page_poison = 1
+vm.mmap_min_addr = 65536
+kernel.randomize_va_space = 2
+
+vm.swappiness = 10
+vm.vfs_cache_pressure = 50
+EOF
+
+cat > /etc/systemd/system/ram-wipe.service << 'EOF'
+[Unit]
+Description=Wipe RAM on shutdown (cold boot protection)
+DefaultDependencies=no
+Before=shutdown.target umount.target final.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/sdmem -vll
+RemainAfterExit=yes
+TimeoutStartSec=0
+Nice=19
+IOSchedulingClass=idle
+
+[Install]
+WantedBy=shutdown.target reboot.target
+EOF
+
+cat > /etc/systemd/system/swap-wipe.service << 'EOF'
+[Unit]
+Description=Disable and wipe swap on shutdown
+DefaultDependencies=no
+Before=shutdown.target
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/swapoff -a
+RemainAfterExit=yes
+Nice=19
+
+[Install]
+WantedBy=shutdown.target
+EOF
+
+mkdir -p /etc/systemd/system/shutdown.target.wants \
+         /etc/systemd/system/reboot.target.wants
+
+ln -sf /etc/systemd/system/ram-wipe.service  /etc/systemd/system/shutdown.target.wants/ram-wipe.service
+ln -sf /etc/systemd/system/ram-wipe.service  /etc/systemd/system/reboot.target.wants/ram-wipe.service
+ln -sf /etc/systemd/system/swap-wipe.service /etc/systemd/system/shutdown.target.wants/swap-wipe.service
+
+cat > /etc/systemd/system/disable-swap.service << 'EOF'
+[Unit]
+Description=Disable swap in live session
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/swapoff -a
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+ln -sf /etc/systemd/system/disable-swap.service /etc/systemd/system/multi-user.target.wants/disable-swap.service

@@ -1,0 +1,76 @@
+#!/bin/bash
+set -e
+
+apt-get update
+apt-get install -y wget tar xz-utils ca-certificates
+
+cd /opt
+
+URL="https://github.com/cake-tech/cake_wallet/releases/download/v5.9.0/Cake_Wallet_v5.9.0_Linux.tar.xz"
+wget -O cakewallet.tar.xz "$URL"
+
+tar -xf cakewallet.tar.xz
+
+DIR=$(find . -maxdepth 1 -type d -name "*Cake_Wallet*" -print | head -n 1)
+if [ -z "$DIR" ]; then
+    echo "ERROR: Cake Wallet folder not found after extraction"
+    ls -la
+    exit 1
+fi
+
+rm -rf cakewallet
+mv "$DIR" cakewallet
+rm -f cakewallet.tar.xz
+
+BIN=$(find cakewallet -type f -name "cake_wallet" -executable -print | head -n 1)
+if [ -z "$BIN" ]; then
+    echo "ERROR: cake_wallet binary not found"
+    find cakewallet -type f
+    exit 1
+fi
+
+chmod +x "$BIN"
+ln -sf "/opt/$BIN" /usr/local/bin/cakewallet
+
+mkdir -p /usr/share/applications
+
+cat > /usr/share/applications/cake-wallet.desktop << 'EOF'
+[Desktop Entry]
+Version=1.0
+Name=Cake Wallet
+GenericName=Monero Wallet
+Comment=Privacy-focused cryptocurrency wallet for Monero
+Exec=/opt/cakewallet/cake_wallet
+Icon=/opt/cakewallet/data/flutter_assets/assets/images/cakewallet_logo.png
+Terminal=false
+Type=Application
+Categories=Finance;Network;
+StartupWMClass=cake_wallet
+MimeType=x-scheme-handler/monero;
+EOF
+
+chmod 644 /usr/share/applications/cake-wallet.desktop
+
+DESKTOP_DIR=$(su - ermine -c "echo \$HOME")/Desktop
+
+mkdir -p "$DESKTOP_DIR"
+
+cat > "$DESKTOP_DIR/cake-wallet.desktop" << 'EOF'
+[Desktop Entry]
+Version=1.0
+Name=Cake Wallet
+GenericName=Monero Wallet
+Comment=Privacy-focused cryptocurrency wallet for Monero
+Exec=/opt/cakewallet/cake_wallet
+Icon=/opt/cakewallet/data/flutter_assets/assets/images/cakewallet_logo.png
+Terminal=false
+Type=Application
+Categories=Finance;Network;
+StartupWMClass=cake_wallet
+MimeType=x-scheme-handler/monero;
+EOF
+
+chown ermine:ermine "$DESKTOP_DIR/cake-wallet.desktop"
+chmod 755 "$DESKTOP_DIR/cake-wallet.desktop"
+
+update-desktop-database /usr/share/applications || true

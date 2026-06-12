@@ -1,0 +1,15 @@
+[Unit]
+Description=Run clean_all after network is ready
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/clean_all.sh
+User=root
+RemainAfterExit=yes
+WorkingDirectory=/usr/local/bin
+
+[Install]
+WantedBy=multi-user.target
+

@@ -1,0 +1,10 @@
+live-boot
+live-config
+live-config-systemd
+systemd-sysv
+systemd
+ca-certificates
+lightdm
+iptables
+iptables-persistent
+unzip

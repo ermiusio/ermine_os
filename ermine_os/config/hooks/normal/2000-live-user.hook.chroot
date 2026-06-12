@@ -1,0 +1,9 @@
+#!/bin/bash
+set -e
+
+if ! id ermine >/dev/null 2>&1; then
+    useradd -m -s /bin/bash ermine
+    echo "ermine:ermine" | chpasswd
+fi
+
+adduser ermine sudo

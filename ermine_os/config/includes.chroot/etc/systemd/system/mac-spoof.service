@@ -1,0 +1,13 @@
+[Unit]
+Description=Random MAC Address Spoofer on boot
+After=network-pre.target
+Before=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/mac_gen.sh
+RemainAfterExit=yes
+User=root
+
+[Install]
+WantedBy=multi-user.target

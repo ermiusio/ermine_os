@@ -1,0 +1,7 @@
+#!/bin/bash
+
+systemctl enable mac-spoof.service
+
+chmod +x /usr/local/bin/mac_gen.sh
+
+

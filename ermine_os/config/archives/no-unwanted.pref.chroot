@@ -1,0 +1,60 @@
+Package: xfce4
+Pin: version *
+Pin-Priority: 1001
+
+Package: xfce4-pulseaudio-plugin
+Pin: version *
+Pin-Priority: -1
+
+Package: libpulse-mainloop-glib0
+Pin: version *
+Pin-Priority: -1
+
+Package: alsa-utils
+Pin: version *
+Pin-Priority: -1
+
+Package: alsa-oss
+Pin: version *
+Pin-Priority: -1
+
+Package: gnome-accessibility-themes
+Pin: version *
+Pin-Priority: -1
+
+Package: gnome-icon-theme
+Pin: version *
+Pin-Priority: -1
+
+Package: gnome-keyring*
+Pin: version *
+Pin-Priority: -1
+
+Package: gnome-themes-extra*
+Pin: version *
+Pin-Priority: -1
+
+Package: pinentry-gnome3
+Pin: version *
+Pin-Priority: -1
+
+Package: policykit-1-gnome
+Pin: version *
+Pin-Priority: -1
+
+Package: seahorse
+Pin: version *
+Pin-Priority: -1
+
+Package: xfburn
+Pin: version *
+Pin-Priority: -1
+
+Package: xfce4-goodies
+Pin: version *
+Pin-Priority: -1
+
+Package: xfce4-pulseaudio-plugin
+Pin: version *
+Pin-Priority: -1
+

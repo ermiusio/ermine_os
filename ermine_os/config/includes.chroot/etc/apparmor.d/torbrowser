@@ -1,0 +1,35 @@
+#include <tunables/global>
+
+@{torbrowser_home}=/opt/tor-browser
+@{tor_exec}=@{torbrowser_home}/Browser/firefox.real
+
+profile torbrowser @{tor_exec} flags=(attach_disconnected,mediate_deleted) {
+
+#include <abstractions/base>
+#include <abstractions/nameservice>
+#include <abstractions/ssl_certs>
+#include <abstractions/fonts>
+#include <abstractions/X>
+
+network tcp,
+network udp,
+
+deny network raw,
+deny capability net_raw,
+
+@{torbrowser_home}/** rix,
+owner @{torbrowser_home}/Browser/** rwk,
+
+owner /tmp/** rw,
+owner /dev/shm/** rw,
+
+deny /home/** rw,
+deny /media/** rw,
+deny /mnt/** rw,
+
+deny /etc/machine-id r,
+deny /proc/cpuinfo r,
+deny /proc/meminfo r,
+
+deny capability sys_ptrace,
+}

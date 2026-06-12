@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e
+
+systemctl enable tor.service
+systemctl enable tor@default.service
+systemctl enable i2pd.service
+
+chmod +x /usr/local/bin/clean_all.sh
+chmod +x /usr/local/bin/tor-killswitch.sh
+chmod +x /etc/NetworkManager/dispatcher.d/20-tor-start.sh
+chmod +x /etc/NetworkManager/dispatcher.d/45-tor-killswitch.sh
+
+systemctl daemon-reload
+systemctl enable clean_all.service

@@ -1,0 +1,10 @@
+#!/bin/bash
+set -e
+
+apt-get update
+apt-get install -y wget gnupg apt-transport-https ca-certificates
+
+wget -q -O - https://repo.i2pd.xyz/.help/add_repo | bash
+
+apt-get update
+apt-get install -y i2pd

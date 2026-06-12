@@ -1,0 +1,18 @@
+set superusers="root"
+
+password_pbkdf2 root grub.pbkdf2.sha512.10000.3DDCBCD56D88C28CE4B637074351E37C4D8A7858F2905595BE1E23A2935EB00722A7A26186E3645A3916B5CAAE4EBB2B1ED85D3019AD37F1DBDDEB54986E5887.9D2D7E422A4254FDDE62CB9680ACED7EE05C5550EEFB34552E192E69C53A44002C77165B78738F1651930FBB58422B49FCF5935913AC78CDFB5EB5E1CB4B61B5
+
+menuentry "ERMINE OS (RAM mode)" {
+    linux /live/vmlinuz boot=live toram=1 quiet splash apparmor=1 security=apparmor
+    initrd /live/initrd.img
+}
+
+menuentry "Start ERMINE OS" {
+    linux /live/vmlinuz boot=live quiet splash apparmor=1 security=apparmor
+    initrd /live/initrd.img
+}
+
+menuentry "Safe Mode" {
+    linux /live/vmlinuz boot=live nomodeset
+    initrd /live/initrd.img
+}

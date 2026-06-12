@@ -1,0 +1,15 @@
+systemd-sysv
+xfce4-panel
+xfce4-session
+xfce4-settings
+xfwm4
+xfdesktop4
+thunar
+thunar-archive-plugin
+thunar-volman         
+xfce4-terminal
+xfce4-taskmanager
+sudo
+wget
+curl
+nano

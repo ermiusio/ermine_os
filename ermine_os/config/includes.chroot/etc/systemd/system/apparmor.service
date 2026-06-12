@@ -1,0 +1,19 @@
+[Unit]
+Description=Load AppArmor profiles
+DefaultDependencies=no
+
+Before=sysinit.target
+After=local-fs.target
+After=systemd-journald-audit.socket
+
+ConditionSecurity=apparmor
+
+[Service]
+Type=oneshot
+ExecStart=/lib/apparmor/apparmor.systemd reload
+ExecReload=/lib/apparmor/apparmor.systemd reload
+ExecStop=/bin/true
+RemainAfterExit=yes
+
+[Install]
+WantedBy=sysinit.target
