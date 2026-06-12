@@ -1,0 +1,42 @@
+desktop-image: "../splash.png"
+
+title-color: "#b2b9c2"
+title-text: "ermine"
+
++ label {
+        top = 100%-50
+        left = 0
+        width = 100%
+        height = 22
+        text = "@KEYMAP_SHORT@"
+        align = "center"
+        color = "#b2b9c2"
+}
+
++ boot_menu {
+        left = 12%
+        width = 76%
+        top = 48%
+        height = 45%
+
+        item_color = "#8a94a3"
+        selected_item_color = "#e0e8f5"
+
+        item_height = 22
+        item_padding = 8
+        item_spacing = 6
+}
+
++ progress_bar {
+        id = "__timeout__"
+        left = 15%
+        top = 100%-75
+        height = 20
+        width = 70%
+
+        text_color = "#242c38"
+        fg_color = "#b2b9c2"
+        bg_color = "#1c2330"
+        border_color = "#4a556b"
+        text = "@TIMEOUT_NOTIFICATION_LONG@"
+}
